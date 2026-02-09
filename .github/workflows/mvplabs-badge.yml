@@ -1,0 +1,27 @@
+name: PlugaLab Experience Badge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  validate-experience:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Verificar label de experiência
+        id: check_label
+        run: |
+          LABEL_FOUND=false
+          for label in ${{ toJson(github.event.pull_request.labels) }}; do
+            if [[ "$label" == *"plugalab-experience"* ]]; then
+              LABEL_FOUND=true
+            fi
+          done
+          echo "label_found=$LABEL_FOUND" >> $GITHUB_OUTPUT
+
+      - name: Resultado
+        if: steps.check_label.outputs.label_found == 'true'
+        run: |
+          echo "🎉 PR válido para experiência PlugaLab"
